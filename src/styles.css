@@ -234,12 +234,17 @@ input:focus, select:focus {
   font-weight: 700;
   margin: 8px 0 0;
 }
-.pagination-controls {
+.view-switch,
+.pagination-controls,
+.bulk-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
-.pagination-controls button {
+.view-switch button,
+.pagination-controls button,
+.bulk-actions button {
   height: 42px;
   border: 1px solid #dce3ee;
   background: #fff;
@@ -248,9 +253,20 @@ input:focus, select:focus {
   font-weight: 800;
   padding: 0 12px;
 }
-.pagination-controls button:disabled {
+.view-switch button.active,
+.favorite-button.active {
+  background: #fff6df;
+  border-color: #f0c15e;
+  color: #966100;
+}
+.pagination-controls button:disabled,
+.bulk-actions button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+.bulk-actions button:last-child:not(:disabled) {
+  color: #a83232;
+  border-color: #f1c4c4;
 }
 
 .empty-state {
@@ -276,6 +292,10 @@ input:focus, select:focus {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 12px 28px rgba(22, 32, 51, 0.07);
+}
+.asset-card.is-favorite {
+  border-color: #f0c15e;
+  box-shadow: 0 14px 32px rgba(214, 139, 31, 0.16);
 }
 
 .asset-image {
@@ -324,7 +344,8 @@ input:focus, select:focus {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.asset-title-row button { padding: 7px 11px; font-size: 12px; }
+.asset-title-row button { padding: 7px 11px; font-size: 12px; white-space: nowrap; }
+.favorite-button { border: 1px solid #dfe6ef; background: #fff; color: #34445a; border-radius: 10px; font-weight: 800; }
 .asset-id,
 .creator-line {
   color: #6f7d8e;

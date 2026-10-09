@@ -2,7 +2,7 @@ import express from 'express'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
-const PORT = process.env.API_PORT || process.env.PORT || 3334
+const PORT = process.env.API_PORT || 3334
 const ADOBE_STOCK_ACTOR_ID = 'kawsar~adobe-stock-scraper'
 const APIFY_MAX_ITEMS = 1000
 const APIFY_DEFAULT_PAGE_SIZE = 25
@@ -191,11 +191,11 @@ async function readApifyJson(response) {
 }
 
 function mapApifyError(status, fallbackDetail) {
-  if (status === 401) return { httpStatus: 401, detail: 'Apify returned 401. Check your token.' }
-  if (status === 403) return { httpStatus: 403, detail: 'Apify returned 403. Token is not allowed to run this actor or read this dataset.' }
-  if (status === 404) return { httpStatus: 404, detail: 'Apify resource was not found. The run or dataset may be unavailable.' }
-  if (status === 429) return { httpStatus: 429, detail: 'Apify rate limit reached. Wait briefly and try again.' }
-  return { httpStatus: 502, detail: fallbackDetail || `Apify returned ${status}.` }
+  if (status === 401) return { httpStatus: 401, detail: 'Data provider returned 401. Check your token.' }
+  if (status === 403) return { httpStatus: 403, detail: 'Data provider returned 403. Token is not allowed for this request.' }
+  if (status === 404) return { httpStatus: 404, detail: 'Data provider resource was not found. The run or dataset may be unavailable.' }
+  if (status === 429) return { httpStatus: 429, detail: 'Data provider rate limit reached. Wait briefly and try again.' }
+  return { httpStatus: 502, detail: fallbackDetail || `Data provider returned ${status}.` }
 }
 
 function toRunStatusPayload(run) {
@@ -244,7 +244,7 @@ app.post('/api/apify/adobe-stock/search/start', async (req, res) => {
     const payload = await readApifyJson(apifyRes)
 
     if (!apifyRes.ok) {
-      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Apify failed to start the actor run.')
+      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Data provider failed to start the request.')
       return res.status(httpStatus).json({ error: 'Search start failed', detail })
     }
 
@@ -256,7 +256,7 @@ app.post('/api/apify/adobe-stock/search/start', async (req, res) => {
     })
   } catch (err) {
     console.error('[apify] Search start failed:', err?.message ?? err)
-    res.status(500).json({ error: 'Search start failed', detail: 'Unexpected local server error while starting Apify actor.' })
+    res.status(500).json({ error: 'Search start failed', detail: 'Unexpected local server error while starting the data request.' })
   }
 })
 
@@ -269,14 +269,14 @@ app.get('/api/apify/adobe-stock/runs/:runId', async (req, res) => {
     const payload = await readApifyJson(apifyRes)
 
     if (!apifyRes.ok) {
-      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Apify failed to read the actor run status.')
+      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Data provider failed to read the job status.')
       return res.status(httpStatus).json({ error: 'Run status failed', detail })
     }
 
     res.json(toRunStatusPayload(payload?.data ?? payload))
   } catch (err) {
     console.error('[apify] Run status failed:', err?.message ?? err)
-    res.status(500).json({ error: 'Run status failed', detail: 'Unexpected local server error while checking Apify run.' })
+    res.status(500).json({ error: 'Run status failed', detail: 'Unexpected local server error while checking the data job.' })
   }
 })
 
@@ -294,7 +294,7 @@ app.get('/api/apify/adobe-stock/datasets/:datasetId/items', async (req, res) => 
     const payload = await readApifyJson(apifyRes)
 
     if (!apifyRes.ok) {
-      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Apify failed to read dataset items.')
+      const { httpStatus, detail } = mapApifyError(apifyRes.status, 'Data provider failed to read dataset items.')
       return res.status(httpStatus).json({ error: 'Dataset page failed', detail })
     }
 
@@ -315,7 +315,7 @@ app.get('/api/apify/adobe-stock/datasets/:datasetId/items', async (req, res) => 
     })
   } catch (err) {
     console.error('[apify] Dataset page failed:', err?.message ?? err)
-    res.status(500).json({ error: 'Dataset page failed', detail: 'Unexpected local server error while reading Apify dataset.' })
+    res.status(500).json({ error: 'Dataset page failed', detail: 'Unexpected local server error while reading the dataset.' })
   }
 })
 
@@ -354,10 +354,10 @@ app.post('/api/apify/adobe-stock/search', async (req, res) => {
     })
   } catch (err) {
     if (err?.name === 'AbortError') {
-      return res.status(504).json({ error: 'Search timed out', detail: 'Apify took too long to return results. Try a smaller result limit.' })
+      return res.status(504).json({ error: 'Search timed out', detail: 'Data provider took too long to return results. Try a smaller result limit.' })
     }
     console.error('[apify] Search failed:', err?.message ?? err)
-    res.status(500).json({ error: 'Search failed', detail: 'Unexpected local server error while contacting Apify.' })
+    res.status(500).json({ error: 'Search failed', detail: 'Unexpected local server error while contacting the data provider.' })
   } finally {
     clearTimeout(timeout)
   }
