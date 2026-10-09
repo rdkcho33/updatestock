@@ -217,7 +217,7 @@ input:focus, select:focus {
 }
 .section-title h2 { margin: 6px 0 0; font-size: 26px; letter-spacing: -0.8px; }
 .section-title em { color: #d68b1f; font-style: normal; }
-.result-tools { display: flex; align-items: end; gap: 10px; }
+.result-tools { display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }
 .result-tools label { min-width: 180px; }
 .result-count {
   border: 1px solid #e4e9f1;
@@ -227,6 +227,30 @@ input:focus, select:focus {
   font-weight: 800;
   font-size: 13px;
   white-space: nowrap;
+}
+.run-note {
+  color: #718096;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 8px 0 0;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pagination-controls button {
+  height: 42px;
+  border: 1px solid #dce3ee;
+  background: #fff;
+  color: #526174;
+  border-radius: 10px;
+  font-weight: 800;
+  padding: 0 12px;
+}
+.pagination-controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .empty-state {
