@@ -2,7 +2,7 @@ import express from 'express'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
-const PORT = process.env.API_PORT || 3334
+const PORT = process.env.API_PORT || process.env.PORT || 3334
 const ADOBE_STOCK_ACTOR_ID = 'kawsar~adobe-stock-scraper'
 const APIFY_MAX_ITEMS = 1000
 const APIFY_DEFAULT_PAGE_SIZE = 25
